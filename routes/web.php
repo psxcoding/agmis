@@ -29,6 +29,3 @@ Route::post('/categories/store', 'CategoriesController@store')->name('categories
 Route::get('/categories/{id}', 'CategoriesController@show')->name('categories.show');
 Route::get('/categories/{id}/edit', 'CategoriesController@edit')->name('categories.edit');
 Route::put('/categories/{id}/update', 'CategoriesController@update')->name('categories.update');
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
