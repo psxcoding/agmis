@@ -19,7 +19,7 @@
 		</li>
 		@endforeach
 		@else
-		<h1>There are no items yet</h1>
+		<h1>There are no items</h1>
 		@endif
 
 	</ul>

@@ -21,7 +21,7 @@
 			{{ $item->name }} |
 		@endforeach
 		@else
-		There are no items for this item.
+		There are no items for this category.
 		@endif
 		
 		<br>

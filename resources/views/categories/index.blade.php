@@ -21,7 +21,7 @@
 		</li>
 		@endforeach
 		@else
-		<h1>There are no categories yet</h1>
+		<h1>There are no categories</h1>
 		@endif
 		
 

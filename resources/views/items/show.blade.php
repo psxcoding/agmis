@@ -16,7 +16,7 @@
 		<strong>Name:</strong> {{ $item->name }}<br>
 		<strong>Price:</strong> {{ $item->price }}<br>
 		<strong>Quantity:</strong> {{ $item->quantity }}<br>
-		<strong>Quantity:</strong> {{ $item->description }}<br>
+		<strong>Description:</strong> {{ empty($item->description ) ? "Description is empty" : $item->description }}  <br>
 		<strong>Categories:</strong> 
 		@if (count($item->cats) > 0)
 		@foreach ($item->cats as $cat)
