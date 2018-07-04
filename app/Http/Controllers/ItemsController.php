@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ItemRequest;
 use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\Category;
+
+//use App\Repositories\ItemRepository;
+
+use App\Services\ItemService;
 
 use Validator;
 use Redirect;
@@ -12,7 +17,22 @@ use Session;
 
 class ItemsController extends Controller
 {
-	public function index()
+    protected $itemService;
+
+    /**
+     * ItemsController constructor.
+     * @param ItemService $itemService
+     */
+    public function __construct(ItemService $itemService)
+    {
+
+        $this->itemService = $itemService;
+    }
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function index()
 	{
 		$items = Item::get();
 
@@ -25,40 +45,31 @@ class ItemsController extends Controller
 		return view('items.create',compact('categories'));
 	}
 
-	public function store(Request $request)
+    private function mapInputData($input)
+    {
+        return [
+            'name' => $input['name'],
+            'quantity' => $input['quantity'],
+            'price' => $input['price'],
+            'description' => $input['description']
+        ];
+    }
+
+    /**
+     * @param ItemRequest $request
+     * @return mixed
+     */
+    public function store(ItemRequest $request)
 	{
+       // $data = $this->mapInputData($request);
+        //dd($data);
+       // $item = $this->itemRepository->save($data);
+        //dd($this->itemService);
+        $item = $this->itemService->createItem($request->all());
 
-		//dd($request);
-		$rules = array(
-			'name'       => 'required',
-			'quantity' => "required|min:1|numeric",
-			'price' => "required|regex:/^\d*(\.\d{1,2})?$/",
-			'category'       => 'required'
-		);
-
-		$validator = Validator::make($request->all(), $rules);
-
-        // process the login
-		if ($validator->fails()) {
-			return Redirect::to('items/create')
-			->withErrors($validator);
-		} else {
-            // store
-			$item = new Item;
-			$item->name       = $request->name;
-			$item->quantity       = $request->quantity;
-			$item->price       = $request->price;
-			$item->description       = $request->description;
-			$status = $item->save();
-			if ($status) {
-				$item->cats()->sync($request->category);
-			}
-
-            // redirect
-			Session::flash('message', 'Successfully created Item!');
-			return Redirect::to('items');
-		}
-
+        // redirect
+        Session::flash('message', 'Successfully created Item!');
+        return Redirect::to('items');
 	}
 
 	public function show($id)
