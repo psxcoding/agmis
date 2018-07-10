@@ -3,6 +3,8 @@
 namespace App\Services;
 
 
+
+
 use App\Models\Item;
 use App\Repositories\ItemRepository;
 
@@ -10,9 +12,14 @@ class ItemService
 {
     protected $itemRepository;
 
-    public function __constructor(ItemRepository $itemRepository)
+    public function __construct(ItemRepository $itemRepository)
     {
         $this->itemRepository = $itemRepository;
+    }
+
+    public function index()
+    {
+        return $this->itemRepository->all();
     }
 
     /**
@@ -28,9 +35,9 @@ class ItemService
 
         //dd($item);
 
-       /* if (!$item->saved()) {
+        if (!$item) {
             return null;
-        }*/
+        }
 
         return $item;
     }

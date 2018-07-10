@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\Category;
 
-//use App\Repositories\ItemRepository;
+
 
 use App\Services\ItemService;
 
@@ -34,7 +34,9 @@ class ItemsController extends Controller
      */
     public function index()
 	{
-		$items = Item::get();
+		//$items = Item::get();
+   // dd($this->itemService);
+        $items = $this->itemService->index();
 
 		return view('items.index', compact('items'));
 	}
@@ -61,11 +63,10 @@ class ItemsController extends Controller
      */
     public function store(ItemRequest $request)
 	{
-       // $data = $this->mapInputData($request);
-        //dd($data);
-       // $item = $this->itemRepository->save($data);
-        //dd($this->itemService);
+
         $item = $this->itemService->createItem($request->all());
+
+        //dd($item);
 
         // redirect
         Session::flash('message', 'Successfully created Item!');
