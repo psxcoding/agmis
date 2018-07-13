@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ItemRequest;
-use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\Category;
-
-
 
 use App\Services\ItemService;
 
@@ -15,8 +12,15 @@ use Validator;
 use Redirect;
 use Session;
 
+/**
+ * Class ItemsController
+ * @package App\Http\Controllers
+ */
 class ItemsController extends Controller
 {
+    /**
+     * @var ItemService
+     */
     protected $itemService;
 
     /**
@@ -25,7 +29,6 @@ class ItemsController extends Controller
      */
     public function __construct(ItemService $itemService)
     {
-
         $this->itemService = $itemService;
     }
 
@@ -33,28 +36,19 @@ class ItemsController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
-	{
-		//$items = Item::get();
-   // dd($this->itemService);
+    {
         $items = $this->itemService->index();
 
-		return view('items.index', compact('items'));
-	}
+        return view('items.index', compact('items'));
+    }
 
-	public function create()
-	{
-		$categories = Category::get();
-		return view('items.create',compact('categories'));
-	}
-
-    private function mapInputData($input)
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function create()
     {
-        return [
-            'name' => $input['name'],
-            'quantity' => $input['quantity'],
-            'price' => $input['price'],
-            'description' => $input['description']
-        ];
+        $categories = Category::get();
+        return view('items.create', compact('categories'));
     }
 
     /**
@@ -62,68 +56,68 @@ class ItemsController extends Controller
      * @return mixed
      */
     public function store(ItemRequest $request)
-	{
-
+    {
         $item = $this->itemService->createItem($request->all());
 
-        //dd($item);
+        if ($item) {
+            $item->cats()->sync($request->category);
+        }
 
-        // redirect
         Session::flash('message', 'Successfully created Item!');
         return Redirect::to('items');
-	}
+    }
 
-	public function show($id)
-	{
-		$item = Item::find($id);
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+   /* public function show($id)
+    {
+        $item = Item::find($id);
+        dd($item);
+        return view('items.show', compact('item'));
+    }*/
 
-		return view('items.show',compact('item'));
-	}
+    /**
+     * @param Item $item
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function show(Item $item)
+    {
+        //$item = Item::find($id);
+        //dd($item);
+        return view('items.show', compact('item'));
+    }
 
-	public function edit($id)
-	{
-		$item = Item::find($id);
-		$categories = Category::get();
-		$itemCategories = $item->cats;
-		$slectedCats = array();
-		foreach ($itemCategories as $key => $value) {
-			$slectedCats[] = $value->id;
-		}
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function edit($id)
+    {
+        $item = Item::find($id);
+        $categories = Category::get();
+        $itemCategories = $item->cats;
+        $slectedCats = $itemCategories->pluck('id')->toArray();
 
-		return view('items.edit',compact('item','categories','slectedCats'));
-	}
+        return view('items.edit', compact('item', 'categories', 'slectedCats'));
+    }
 
-	public function update(Request $request, $id)
-	{
+    /**
+     * @param ItemRequest $request
+     * @param $id
+     * @return mixed
+     */
+    public function update(ItemRequest $request, $id)
+    {
+        $item = $this->itemService->updateItem($id, $request->all());
 
-		$rules = array(
-			'name'       => 'required',
-			'quantity' => "required|min:1|numeric",
-			'price' => "required|regex:/^\d*(\.\d{1,2})?$/",
-			'category'       => 'required'
-		);
+        if ($item) {
+            $item->cats()->sync($request->category);
+        }
 
-		$validator = Validator::make($request->all(), $rules);
-
-		if ($validator->fails()) {
-			return Redirect::to(route('items.edit',[$id]))
-			->withErrors($validator);
-		} else {
-            // store
-			$item = Item::find($id);
-			$item->name       = $request->name;
-			$item->quantity       = $request->quantity;
-			$item->price       = $request->price;
-			$item->description       = $request->description;
-			$status = $item->save();
-			if ($status) {
-				$item->cats()->sync($request->category);
-			}
-
-            // redirect
-			Session::flash('message', 'Successfully updated group!');
-			return Redirect::to(route('items.show',[$id]));
-		}
-	}
+        Session::flash('message', 'Successfully updated group!');
+        return Redirect::to(route('items.show', [$id]));
+    }
 
 }

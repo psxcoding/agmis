@@ -18,7 +18,7 @@ Route::get('/', function () {
 Route::get('/items', 'ItemsController@index')->name('items');
 Route::get('/items/create', 'ItemsController@create')->name('items.create');
 Route::post('/items/store', 'ItemsController@store')->name('items.store');
-Route::get('/items/{id}', 'ItemsController@show')->name('items.show');
+Route::get('/items/{item}', 'ItemsController@show')->name('items.show');
 Route::get('/items/{id}/edit', 'ItemsController@edit')->name('items.edit');
 Route::put('/items/{id}/update', 'ItemsController@update')->name('items.update');
 
